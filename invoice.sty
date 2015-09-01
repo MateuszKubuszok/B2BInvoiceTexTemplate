@@ -1,0 +1,99 @@
+\ProvidesPackage{invoice}
+
+\usepackage[margin=0.75in]{geometry}
+
+\usepackage{keyval}   % for '\define@key' and '\setkeys'
+\usepackage{environ}  % for '\NewEnviron' macro
+\usepackage{tabularx} % for 'tabularx' environment and 'X' column type
+\usepackage{ragged2e} % for '\RaggedRight' macro (allows hyphenation)
+\usepackage{makecell} % for '\makecell'
+\usepackage{fp}       % for '\FPeval'
+\usepackage{fmtcount} % for '\numberstringnum'
+
+\usepackage[utf8]{inputenc} % input encoding
+\usepackage[T1]{fontenc}    % 8-bit font encoding (needed by e.g. PDFs)
+\usepackage{polski}         % i18n package - corrent word breaking
+\usepackage[polish]{babel}  % i18n package - required to correct display of polish fonts
+
+\selectlanguage{polish}
+
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
+
+\newcommand{\brutto}[2]{\FPeval{\result}{round(#1 * (#2 / 100 + 1), 2)}\result}
+\newcommand{\multiline}[1]{\begin{tabular}[t]{@{}l@{}} #1 \end{tabular}}
+\newcommand{\tax}[2]{\FPeval{\result}{round(#1 * (#2 / 100), 2)}\result}
+
+\define@key{invckey}{Number}{\def\InvoiceNumber{#1}}
+\define@key{invckey}{SellingDate}{\def\SellingDate{#1}}
+\define@key{invckey}{InvoiceDate}{\def\InvoiceDate{#1}}
+\define@key{invckey}{PaymentDate}{\def\PaymentDate{#1}}
+\define@key{invckey}{Seller}{\def\Seller{\makecell[l]{#1}}}
+\define@key{invckey}{Buyer}{\def\Buyer{\makecell[l]{#1}}}
+\define@key{invckey}{TotalNr}{\def\TotalNr{#1}}
+\define@key{invckey}{TotalWords}{\def\TotalWords{#1}}
+\define@key{invckey}{BankAccount}{\def\BankAccount{\multiline{#1}}}
+\define@key{invckey}{Signer}{\def\Signer{#1}}
+
+\NewEnviron{invoice}[1][]{
+\setkeys{invckey}{#1}
+\begin{table}
+  \centerline{\LARGE{Faktura VAT \InvoiceNumber}}
+  \centerline{(oryginał / kopia)}
+  \ \\ \ \\
+  \begin{tabularx}{\textwidth}{Y l l}
+   & Data sprzedaży:   & \SellingDate \\
+   & Data wystawienia: & \InvoiceDate \\
+   & Termin płatności: & \PaymentDate \\
+  \end{tabularx}
+  \ \\
+  \ \\
+  \begin{tabularx}{\textwidth}{L{9cm} Y}
+   Sprzedawca: & Nabywca: \\
+   \Seller     & \Buyer   \\
+  \end{tabularx}
+  \ \\
+  \ \\
+  \begin{tabularx}{\linewidth}{| L{0.5cm} | Y | L{2cm} | L{1.5cm} | L{2cm} | L{2cm} |}
+    \hline
+    Lp. &
+    Nazwa towaru lub usługi &
+    Wartość netto &
+    Podatek VAT &
+    Kwota podatku VAT &
+    Wartość brutto \\
+    \hline
+    \BODY
+    \hline
+  \end{tabularx}
+  \ \\
+  \ \\
+  \ \\
+  \begin{tabularx}{\linewidth}{| L{5cm} | Y |}
+    \hline
+                    & Do zapłaty: \\
+    \hline
+    Łącznie brutto: & \TotalNr \\
+    \hline
+    Zapłacono:      & 0 \\
+    \hline
+    Do zapłaty:     & \TotalNr \\
+    \hline
+    Słownie:        & \TotalWords \\
+    \hline
+  \end{tabularx}
+  \ \\
+  \ \\
+  \begin{tabularx}{\linewidth}{ L{5cm} Y }
+    Forma płatności:  & przelew \\ [0.5cm]
+    Dane do przelewu: & \BankAccount \\
+  \end{tabularx}
+  \ \\
+  \ \\
+  \ \\
+  \begin{tabularx}{\linewidth}{C{7cm} Y}
+  Faktura bez podpisu odbiorcy & \makecell{Osoba upoważniona \\ do wystawienia faktury: \\ \Signer} \\
+  \end{tabularx}
+\end{table}}

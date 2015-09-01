@@ -1,0 +1,35 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{invoice}
+\usepackage{issuer}
+\usepackage{client}
+
+\pagestyle{empty}
+
+\begin{document}
+\begin{invoice}[Number=2015/1,
+                SellingDate=30.02.2015,
+                InvoiceDate=30.02.2015,
+                PaymentDate=14.03.2015,
+                Seller=\Issuer,
+                Buyer=\Client,
+                TotalNr=1770.00 zł,
+                TotalWords=tysiąc siedemset siedemdziesiąt złotych,
+                BankAccount=\IssuerBankAccount,
+                Signer=\IssuerInvoiceSigner]
+  1. &
+  Usługi dla klienta &
+  1000.00 zł &
+  23\% &
+  \tax{1000}{23} zł &
+  \brutto{1000}{23} zł \\
+  
+  \hline
+  
+  2. &
+  Delegacja (bilety lotnicze) &
+  500.00 zł &
+  8\% &
+  \tax{500}{8} zł &
+  \brutto{500}{8} zł \\
+\end{invoice}
+\end{document}
