@@ -22,9 +22,41 @@
 \newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
 \newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
 
-\newcommand{\brutto}[2]{\FPeval{\result}{round(#1 * (#2 / 100 + 1), 2)}\result}
+\newcounter{itemIndex}
+
 \newcommand{\multiline}[1]{\begin{tabular}[t]{@{}l@{}} #1 \end{tabular}}
-\newcommand{\tax}[2]{\FPeval{\result}{round(#1 * (#2 / 100), 2)}\result}
+
+\newcommand{\resetCounters}{
+  \setcounter{itemIndex}{0}%
+  \FPeval{\nettoTotal}{0}%
+  \xdef\nettoTotal{\nettoTotal}%%
+  \FPeval{\taxTotal}{0}%
+  \xdef\taxTotal{\taxTotal}%%
+  \FPeval{\bruttoTotal}{0}%
+  \xdef\bruttoTotal{\bruttoTotal}%%
+}
+
+\newcommand{\nextItem}[3]{
+  \FPeval{\netto}{round(#1, 2)}%
+  \xdef\netto{\netto}%%
+  \FPeval{\nettoTotal}{round(\nettoTotal + \netto, 2)}%
+  \xdef\nettoTotal{\nettoTotal}%%
+  \FPeval{\tax}{round(#1 * (#2 / 100), 2)}%
+  \xdef\tax{\tax}%%
+  \FPeval{\taxTotal}{round(\taxTotal + \tax, 2)}%
+  \xdef\taxTotal{\taxTotal}%%
+  \FPeval{\brutto}{round(#1 * (#2 / 100 + 1), 2)}%
+  \xdef\brutto{\brutto}%%
+  \FPeval{\bruttoTotal}{round(\bruttoTotal + \brutto, 2)}%
+  \xdef\bruttoTotal{\bruttoTotal}%%
+  \addtocounter{itemIndex}{1}%
+  \theitemIndex. &
+  #3 &
+  \netto \ zł &
+  #2\% &
+  \tax \ zł &
+  \brutto \ zł \\
+}
 
 \define@key{invckey}{Number}{\def\InvoiceNumber{#1}}
 \define@key{invckey}{SellingDate}{\def\SellingDate{#1}}
@@ -32,13 +64,12 @@
 \define@key{invckey}{PaymentDate}{\def\PaymentDate{#1}}
 \define@key{invckey}{Seller}{\def\Seller{\makecell[l]{#1}}}
 \define@key{invckey}{Buyer}{\def\Buyer{\makecell[l]{#1}}}
-\define@key{invckey}{TotalNr}{\def\TotalNr{#1}}
 \define@key{invckey}{TotalWords}{\def\TotalWords{#1}}
 \define@key{invckey}{BankAccount}{\def\BankAccount{\multiline{#1}}}
 \define@key{invckey}{Signer}{\def\Signer{#1}}
 
 \NewEnviron{invoice}[1][]{
-\setkeys{invckey}{#1}
+\setkeys{invckey}{#1}%
 \begin{table}
   \centerline{\LARGE{Faktura VAT \InvoiceNumber}}
   \centerline{(oryginał / kopia)}
@@ -58,14 +89,22 @@
   \ \\
   \begin{tabularx}{\linewidth}{| L{0.5cm} | Y | L{2cm} | L{1.5cm} | L{2cm} | L{2cm} |}
     \hline
+    \resetCounters
     Lp. &
     Nazwa towaru lub usługi &
     Wartość netto &
-    Podatek VAT &
-    Kwota podatku VAT &
+    Stawka VAT &
+    Kwota VAT &
     Wartość brutto \\
     \hline
     \BODY
+    \hline
+    &
+    Razem do zapłaty &
+    \nettoTotal \ zł &
+    &
+    \taxTotal \ zł &
+    \bruttoTotal \ zł \\
     \hline
   \end{tabularx}
   \ \\
@@ -73,13 +112,9 @@
   \ \\
   \begin{tabularx}{\linewidth}{| L{5cm} | Y |}
     \hline
-                    & Do zapłaty: \\
+    Zapłacono:      & 0 zł \\
     \hline
-    Łącznie brutto: & \TotalNr \\
-    \hline
-    Zapłacono:      & 0 \\
-    \hline
-    Do zapłaty:     & \TotalNr \\
+    Do zapłaty:     & \bruttoTotal \ zł \\
     \hline
     Słownie:        & \TotalWords \\
     \hline
