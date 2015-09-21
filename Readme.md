@@ -4,7 +4,7 @@ Polish B2B Invoice TEX template
 Example
 ---
 
-You can see example PDF [here](https://github.com/MateuszKubuszok/B2BInvoiceTexTemplate/releases/download/0.1/example.pdf). It uses example TeX below as input.
+You can see example PDF [here](https://github.com/MateuszKubuszok/B2BInvoiceTexTemplate/releases/download/0.2/example.pdf). It uses example TeX below as input.
 
 How to use
 ---
