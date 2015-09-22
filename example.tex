@@ -12,13 +12,14 @@
                 PaymentDate=14.03.2015,
                 Seller=\Issuer,
                 Buyer=\Client,
+                Paid=0.00,
                 TotalWords=tysiąc siedemset siedemdziesiąt złotych,
                 BankAccount=\IssuerBankAccount,
                 Signer=\IssuerInvoiceSigner]
-  \nextItem{1000.00}{23}{Usługi dla klienta}
+  \withVatTwentyThree{1000.00}\printItem{Usługi dla klienta}
   
   \hline
   
-  \nextItem{500.00}{8}{Refaktura kosztów delegacji (bilety lotnicze)}
+  \withVatEight{500.00}\printItem{Refaktura kosztów delegacji (bilety lotnicze)}
 \end{invoice}
 \end{document}

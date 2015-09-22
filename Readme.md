@@ -54,39 +54,27 @@ Now all we need to do is to create an invoce with them:
 
     \begin{document}
     \begin{invoice}[Number=2015/1, % invoice number - required to be unique, but there are not strict format guidelones
-                    SellingDate=30.02.2015, 
+                    SellingDate=30.02.2015,
                     InvoiceDate=30.02.2015,
                     PaymentDate=14.03.2015,
                     Seller=\Issuer, % here you can simply use command to fill invoice issuer data for you
                     Buyer=\Client, % here you can simply use command to fill client data for you
-                    TotalNr=1770.00 zł, % unfortunatelly you have to fill total on your own
-                    TotalWords=tysiąc siedemset siedemdziesiąt złotych, % same here
+                    Paid=0.00, % how much client already paid
+                    TotalWords=tysiąc siedemset siedemdziesiąt złotych, % for now has to be filled manually
                     BankAccount=\IssuerBankAccount, % here you can use command to fill bank account for you
                     Signer=\IssuerInvoiceSigner] % here you can use command to fill invoice signer for you
 
-      % Invoice has 6 columns to fill:
-      %  1. item number,
-      %  2. service description,
-      %  3. price netto
-      %  4. VAT tax
-      %  5. VAT tax value
-      %  6. price brutto
+      % First you have to define VAT rate and service cost, then name of the service. For now template supports:
+      %  1. \withVatZero{cost}\printItem{name}
+      %  2. \withVatFive{cost}\printItem{name}
+      %  3. \withVatEight{cost}\printItem{name}
+      %  4. \withVatTwentyThree{cost}\printItem{name}
 
-      1. &
-      Usługi dla klienta &
-      1000.00 zł &
-      23\% &
-      \tax{1000}{23} zł & % \tax{netto}{vat} and \brutto{netto}{vat} can make things easier to read
-      \brutto{1000}{23} zł \\
-      
+      \withVatTwentyThree{1000.00}\printItem{Usługi dla klienta}
+
       \hline
-      
-      2. &
-      Delegacja (bilety lotnicze) &
-      500.00 zł &
-      8\% &
-      \tax{500}{8} zł &
-      \brutto{500}{8} zł \\
+
+      \withVatEight{500.00}\printItem{Refaktura kosztów delegacji (bilety lotnicze)}
     \end{invoice}
     \end{document}
 

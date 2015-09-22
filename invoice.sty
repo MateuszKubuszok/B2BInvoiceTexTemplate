@@ -34,28 +34,104 @@
   \xdef\taxTotal{\taxTotal}%%
   \FPeval{\bruttoTotal}{0}%
   \xdef\bruttoTotal{\bruttoTotal}%%
+  \FPeval{\nettoZeroTotal}{0}%
+  \xdef\nettoZeroTotal{\nettoZeroTotal}%%
+  \FPeval{\taxZeroTotal}{0}%
+  \xdef\taxZeroTotal{\taxZeroTotal}%%
+  \FPeval{\bruttoZeroTotal}{0}%
+  \xdef\bruttoZeroTotal{\bruttoZeroTotal}%%
+  \FPeval{\nettoFiveTotal}{0}%
+  \xdef\nettoFiveTotal{\nettoFiveTotal}%%
+  \FPeval{\taxFiveTotal}{0}%
+  \xdef\taxFiveTotal{\taxFiveTotal}%%
+  \FPeval{\bruttoFiveTotal}{0}%
+  \xdef\bruttoFiveTotal{\bruttoFiveTotal}%%
+  \FPeval{\nettoEightTotal}{0}%
+  \xdef\nettoEightTotal{\nettoEightTotal}%%
+  \FPeval{\taxEightTotal}{0}%
+  \xdef\taxEightTotal{\taxEightTotal}%%
+  \FPeval{\bruttoEightTotal}{0}%
+  \xdef\bruttoEightTotal{\bruttoEightTotal}%%
+  \FPeval{\nettoTwentyThreeTotal}{0}%
+  \xdef\nettoTwentyThreeTotal{\nettoTwentyThreeTotal}%%
+  \FPeval{\taxTwentyThreeTotal}{0}%
+  \xdef\taxTwentyThreeTotal{\taxTwentyThreeTotal}%%
+  \FPeval{\bruttoTwentyThreeTotal}{0}%
+  \xdef\bruttoTwentyThreeTotal{\bruttoTwentyThreeTotal}%%
 }
 
-\newcommand{\nextItem}[3]{
+\newcommand{\withVat}[2]{
   \FPeval{\netto}{round(#1, 2)}%
   \xdef\netto{\netto}%%
   \FPeval{\nettoTotal}{round(\nettoTotal + \netto, 2)}%
   \xdef\nettoTotal{\nettoTotal}%%
-  \FPeval{\tax}{round(#1 * (#2 / 100), 2)}%
+  \FPeval{\vat}{round(#2, 0)}%
+  \xdef\vat{\vat}%%
+  \FPeval{\tax}{round(\netto * (\vat / 100), 2)}%
   \xdef\tax{\tax}%%
   \FPeval{\taxTotal}{round(\taxTotal + \tax, 2)}%
   \xdef\taxTotal{\taxTotal}%%
-  \FPeval{\brutto}{round(#1 * (#2 / 100 + 1), 2)}%
+  \FPeval{\brutto}{round(\netto * (\vat / 100 + 1), 2)}%
   \xdef\brutto{\brutto}%%
   \FPeval{\bruttoTotal}{round(\bruttoTotal + \brutto, 2)}%
   \xdef\bruttoTotal{\bruttoTotal}%%
+}
+
+\newcommand{\withVatZero}[1]{
+  \withVat{#1}{0}%
+  \FPeval{\nettoZeroTotal}{round(\nettoZeroTotal + \netto, 2)}%
+  \xdef\nettoZeroTotal{\nettoZeroTotal}%%
+  \FPeval{\taxZeroTotal}{round(\taxZeroTotal + \tax, 2)}%
+  \xdef\taxZeroTotal{\taxZeroTotal}%%
+  \FPeval{\bruttoZeroTotal}{round(\bruttoZeroTotal + \brutto, 2)}%
+  \xdef\bruttoZeroTotal{\bruttoZeroTotal}%%
+}
+
+\newcommand{\withVatFive}[1]{
+  \withVat{#1}{8}%
+  \FPeval{\nettoFiveTotal}{round(\nettoFiveTotal + \netto, 2)}%
+  \xdef\nettoFiveTotal{\nettoFiveTotal}%%
+  \FPeval{\taxFiveTotal}{round(\taxFiveTotal + \tax, 2)}%
+  \xdef\taxFiveTotal{\taxFiveTotal}%%
+  \FPeval{\bruttoFiveTotal}{round(\bruttoFiveTotal + \brutto, 2)}%
+  \xdef\bruttoFiveTotal{\bruttoFiveTotal}%%
+}
+
+\newcommand{\withVatEight}[1]{
+  \withVat{#1}{8}%
+  \FPeval{\nettoEightTotal}{round(\nettoEightTotal + \netto, 2)}%
+  \xdef\nettoEightTotal{\nettoEightTotal}%%
+  \FPeval{\taxEightTotal}{round(\taxEightTotal + \tax, 2)}%
+  \xdef\taxEightTotal{\taxEightTotal}%%
+  \FPeval{\bruttoEightTotal}{round(\bruttoEightTotal + \brutto, 2)}%
+  \xdef\bruttoEightTotal{\bruttoEightTotal}%%
+}
+
+\newcommand{\withVatTwentyThree}[1]{
+  \withVat{#1}{23}%
+  \FPeval{\nettoTwentyThreeTotal}{round(\nettoTwentyThreeTotal + \netto, 2)}%
+  \xdef\nettoTwentyThreeTotal{\nettoTwentyThreeTotal}%%
+  \FPeval{\taxTwentyThreeTotal}{round(\taxTwentyThreeTotal + \tax, 2)}%
+  \xdef\taxTwentyThreeTotal{\taxTwentyThreeTotal}%%
+  \FPeval{\bruttoTwentyThreeTotal}{round(\bruttoTwentyThreeTotal + \brutto, 2)}%
+  \xdef\bruttoTwentyThreeTotal{\bruttoTwentyThreeTotal}%%
+}
+
+\newcommand{\printItem}[1]{
   \addtocounter{itemIndex}{1}%
   \theitemIndex. &
-  #3 &
-  \netto \ zł &
-  #2\% &
-  \tax \ zł &
-  \brutto \ zł \\
+  #1             &
+  \netto \ zł    &
+  \vat\%         &
+  \tax \ zł      &
+  \brutto \ zł   \\
+}
+
+\newcommand{\withCost}[0]{
+  \FPeval{\alreadyPaid}{round(\Paid, 2)}%
+  \xdef\alreadyPaid{\alreadyPaid}%%
+  \FPeval{\totalCost}{round(\bruttoTotal - \alreadyPaid, 2)}%
+  \xdef\totalCost{\totalCost}%%
 }
 
 \define@key{invckey}{Number}{\def\InvoiceNumber{#1}}
@@ -64,6 +140,7 @@
 \define@key{invckey}{PaymentDate}{\def\PaymentDate{#1}}
 \define@key{invckey}{Seller}{\def\Seller{\makecell[l]{#1}}}
 \define@key{invckey}{Buyer}{\def\Buyer{\makecell[l]{#1}}}
+\define@key{invckey}{Paid}{\def\Paid{#1}}
 \define@key{invckey}{TotalWords}{\def\TotalWords{#1}}
 \define@key{invckey}{BankAccount}{\def\BankAccount{\multiline{#1}}}
 \define@key{invckey}{Signer}{\def\Signer{#1}}
@@ -90,35 +167,52 @@
   \begin{tabularx}{\linewidth}{| L{0.5cm} | Y | L{2cm} | L{1.5cm} | L{2cm} | L{2cm} |}
     \hline
     \resetCounters
-    Lp. &
+    Lp.                     &
     Nazwa towaru lub usługi &
-    Wartość netto &
-    Stawka VAT &
-    Kwota VAT &
-    Wartość brutto \\
+    Wartość netto           &
+    Stawka VAT              &
+    Kwota VAT               &
+    Wartość brutto          \\
     \hline
     \BODY
     \hline
-    &
-    Razem do zapłaty &
-    \nettoTotal \ zł &
-    &
-    \taxTotal \ zł &
+                      &
+    Razem             &
+    \nettoTotal \ zł  &
+                      &
+    \taxTotal \ zł    &
     \bruttoTotal \ zł \\
     \hline
   \end{tabularx}
   \ \\
   \ \\
-  \ \\
-  \begin{tabularx}{\linewidth}{| L{5cm} | Y |}
+  \begin{tabular}{c c}
+  \begin{tabularx}{0.50\linewidth}{| Y | L{1.8cm} | L{1.8cm} | L{1.8cm} |}
     \hline
-    Zapłacono:      & 0 zł \\
+    Stawka    & Wartość netto               & Kwota VAT                 & Wartość brutto               \\
     \hline
-    Do zapłaty:     & \bruttoTotal \ zł \\
+    0\%       & \nettoZeroTotal \ zł        & \taxZeroTotal \ zł        & \bruttoZeroTotal \ zł        \\
+    \hline
+    5\%       & \nettoFiveTotal \ zł        & \taxFiveTotal \ zł        & \bruttoFiveTotal \ zł        \\
+        \hline
+    8\%       & \nettoEightTotal \ zł       & \taxEightTotal \ zł       & \bruttoEightTotal \ zł       \\
+    \hline
+    23\%      & \nettoTwentyThreeTotal \ zł & \taxTwentyThreeTotal \ zł & \bruttoTwentyThreeTotal \ zł \\
+    \hline
+    Razem     & \nettoTotal \ zł            & \taxTotal            \ zł & \bruttoTotal \ zł            \\
+    \hline
+  \end{tabularx} &
+  \withCost
+  \begin{tabularx}{0.45\linewidth}{| L{2cm} | Y |}
+    \hline
+    Zapłacono:      & \Paid \ zł \\
+    \hline
+    Do zapłaty:     & \totalCost \ zł \\
     \hline
     Słownie:        & \TotalWords \\
     \hline
-  \end{tabularx}
+  \end{tabularx}\\
+  \end{tabular}
   \ \\
   \ \\
   \begin{tabularx}{\linewidth}{ L{5cm} Y }
